@@ -1,0 +1,39 @@
+# === Ruby / Rails ===
+.bundle/
+vendor/bundle/
+.byebug_history
+*.pid
+*.log
+
+# Rails Cache & Temp
+tmp/
+log/
+bootsnap/
+storage/
+
+# Database
+db/*.sqlite3
+db/*.sqlite3-journal
+
+# === Frontend / Node ===
+node_modules/
+
+# Asset build
+public/assets/
+public/packs/
+
+# === Cache / System ===
+.cache/
+.DS_Store
+Thumbs.db
+
+# === Environment / Secrets ===
+.env
+config/master.key
+
+# === IDE ===
+.idea/
+.vscode/
+
+# === Misc ===
+*.swp

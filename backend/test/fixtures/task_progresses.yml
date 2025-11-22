@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  workspace: one
+  user: one
+  total_tasks: 1
+  completed_tasks: 1
+  completion_rate: 1
+  aggregated_at: 2025-11-23 02:33:47
+
+two:
+  workspace: two
+  user: two
+  total_tasks: 1
+  completed_tasks: 1
+  completion_rate: 1
+  aggregated_at: 2025-11-23 02:33:47

@@ -7,7 +7,7 @@
 - workspaces  
 - members  
 - tasks  
-- task_progress
+- task_progresses
 
 ---
 
@@ -68,20 +68,21 @@
 | id | bigint | PK | タスクID |
 | title | string | NOT NULL | タスク名 |
 | description | text | NULL可 | 詳細説明 |
-| status | integer | NOT NULL / default: 0 | 状態（todo=0, done=1） |
+| status | integer | NOT NULL / default: 0 | 状態（todo=0, doing=1, done=2） |
 | category | string | NULL可 | カテゴリ |
 | workspace_id | bigint | FK(workspaces.id) | 所属ワークスペースID |
 | assignee_id | bigint | FK(users.id) | 担当ユーザーID |
 | created_at | datetime | NOT NULL | 作成日時 |
 | updated_at | datetime | NOT NULL | 更新日時 |
 
-ステータスは enum として以下のように管理する：  
-- 0 : todo  
-- 1 : done  
+ステータスは Rails の enum 機能を用いて、以下のように管理する：  
+- 0 : todo（未着手）  
+- 1 : doing（進行中）  
+- 2 : done（完了）  
 
 ---
 
-### 1.5 task_progress テーブル
+### 1.5 task_progresses テーブル
 
 Rakeバッチ処理によって集計されたタスク進捗情報を保存するテーブル。
 
@@ -135,7 +136,7 @@ Rakeバッチ処理によって集計されたタスク進捗情報を保存す�
 
 ---
 
-### 2.4 task_progress の関係
+### 2.4 task_progresses の関係
 
 
 - ワークスペース単位、ユーザー単位でタスク進捗を管理する。

@@ -14,8 +14,3 @@ development:
 test:
   <<: *default
   database: ruby_saas_task_test
-
-# 필요하면 production도 나중에 추가
-# production:
-#   <<: *default
-#   database: ruby_saas_task_production

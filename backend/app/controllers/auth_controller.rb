@@ -32,4 +32,36 @@ class AuthController < ApplicationController
       }, status: :unprocessable_entity
     end
   end
+
+  # POST /login
+  def login
+    login_id = params[:login_id]
+    password = params[:password]
+
+    # 必須チェック
+    if login_id.blank? || password.blank?
+      return render json: { error: "login_id と password は必須です。" },
+                    status: :bad_request
+    end
+
+    user = User.find_by(login_id: login_id)
+
+
+    if user&.authenticate(password)
+      token = SecureRandom.hex(16)
+
+      render json: { 
+        message: "ログインに成功しました。",
+        token: token,
+        user: {
+          id: user.id,
+          login_id: user.login_id
+        }
+      }, status: :ok
+    else
+      render json: {
+        error: "ログインIDまたはパスワードが正しくありません。"
+      }, status: :unauthorized
+    end
+  end
 end

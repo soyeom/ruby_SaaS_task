@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_secure_password
+
   has_many :members, dependent: :destroy
   has_many :workspaces, through: :members
 
@@ -10,5 +12,4 @@ class User < ApplicationRecord
   has_many :task_progresses, dependent: :destroy
 
   validates :login_id, presence: true, uniqueness: true
-  validates :password, presence: true
 end

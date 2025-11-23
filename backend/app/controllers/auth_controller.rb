@@ -44,15 +44,13 @@ class AuthController < ApplicationController
                     status: :bad_request
     end
 
-    user = User.find_by(login_id: login_id)
-
+    user = User.find_by(login_id: params[:login_id])
 
     if user&.authenticate(password)
-      token = SecureRandom.hex(16)
+      session[:user_id] = user.id
 
       render json: { 
         message: "ログインに成功しました。",
-        token: token,
         user: {
           id: user.id,
           login_id: user.login_id
@@ -63,5 +61,14 @@ class AuthController < ApplicationController
         error: "ログインIDまたはパスワードが正しくありません。"
       }, status: :unauthorized
     end
+  end
+
+  # DELETE /logout
+  def logout
+    session.delete(:user_id)
+
+    render json: {
+      message: "ログアウトしました。"
+    }
   end
 end

@@ -5,5 +5,8 @@ Rails.application.routes.draw do
   delete "/logout", to: "auth#logout"
 
   # ワークスペース
-  resources :workspaces, only: %i[index create show update destroy]
+  resources :workspaces, only: %i[index create show update destroy]  do
+    # タスク
+    resources :tasks, only: %i[index show create update destroy]
+  end
 end

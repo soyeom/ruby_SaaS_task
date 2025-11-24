@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::API
   include ActionController::Cookies
 
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+
   private
 
   # 現在のログインユーザーを取得
@@ -16,5 +18,12 @@ class ApplicationController < ActionController::API
     unless current_user
       render json: { error: "ログインが必要です。" }, status: :unauthorized
     end
+  end
+
+  def render_not_found(exception)
+    render json: {
+      error: "リソースが見つかりません。",
+      details: exception.message
+    }, status: :not_found
   end
 end

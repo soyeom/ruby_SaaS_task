@@ -2,7 +2,7 @@ class Task < ApplicationRecord
   belongs_to :workspace
   belongs_to :assignee, class_name: "User"
 
-  enum status: { todo: 0, doing: 1, done: 2 }
+  enum :status, { todo: 0, doing: 1, done: 2 }
 
   validates :title, presence: true
   validates :status, presence: true

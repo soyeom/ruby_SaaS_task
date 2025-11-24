@@ -13,19 +13,18 @@ class AuthController < ApplicationController
     end
 
     # ユーザー作成（パスワード確認込み）
-    user = User.new( 
+    user = User.new(
       login_id: login_id,
       password: password,
-      password_confirmation: password_conf 
+      password_confirmation: password_conf
     )
 
     # 保存失敗時の処理
     unless user.save
-      render json: {
+      return render json: {
         error: "ユーザー登録に失敗しました。",
         details: user.errors.full_messages
       }, status: :unprocessable_entity
-      return
     end
 
     # 登録成功
@@ -50,13 +49,13 @@ class AuthController < ApplicationController
                     status: :bad_request
     end
 
-    user = User.find_by(login_id: params[:login_id])
+    user = User.find_by(login_id: login_id)
 
     # 認証処理
     if user&.authenticate(password)
       session[:user_id] = user.id
 
-      render json: { 
+      render json: {
         message: "ログインに成功しました。",
         user: {
           id: user.id,
@@ -77,6 +76,6 @@ class AuthController < ApplicationController
 
     render json: {
       message: "ログアウトしました。"
-    }
+    }, status: :ok
   end
 end

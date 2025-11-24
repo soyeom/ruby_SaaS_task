@@ -1,17 +1,20 @@
 # モデル設計書
 
-本システムは、ユーザー認証、ワークスペース管理、タスク管理、およびタスク進捗集計機能を実現するため、以下のテーブル構成で設計する。
+本システムは、ユーザー認証、ワークスペース管理、タスク管理、およびタスク進捗集計機能を実現するため、
+以下のテーブル構成で設計する。
 
 使用テーブル：
 - users  
 - workspaces  
 - members  
 - tasks  
-- task_progresses
+- task_progresses  
 
 ---
 
 ## 1. テーブル定義
+
+---
 
 ### 1.1 users テーブル
 
@@ -21,7 +24,7 @@
 |----------|----|------|------|
 | id | bigint | PK | ユーザーID |
 | login_id | string | UNIQUE / NOT NULL | ログイン用ID |
-| password | string | NOT NULL | パスワード |
+| password_digest | string | NOT NULL | パスワード（bcrypt 使用） |
 | created_at | datetime | NOT NULL | 作成日時 |
 | updated_at | datetime | NOT NULL | 更新日時 |
 
@@ -38,70 +41,31 @@
 | created_at | datetime | NOT NULL | 作成日時 |
 | updated_at | datetime | NOT NULL | 更新日時 |
 
+本設計では `workspaces` テーブルに `owner_id` は持たせず、  
+ワークスペースのオーナーは `members.role` によって管理する。
+
 ---
 
 ### 1.3 members テーブル（中間テーブル）
 
-ユーザーとワークスペースの多対多関係を管理する中間テーブル。
+ユーザーとワークスペースの多対多関係を管理する中間テーブル。  
+ワークスペース内での権限（オーナー / 一般メンバー）もここで管理する。
 
 | カラム名 | 型 | 制約 | 説明 |
 |----------|----|------|------|
 | id | bigint | PK | メンバーID |
 | user_id | bigint | FK(users.id) | ユーザーID |
 | workspace_id | bigint | FK(workspaces.id) | ワークスペースID |
+| role | integer | NOT NULL / default: 0 | 役割（owner=0, member=1） |
 | created_at | datetime | NOT NULL | 作成日時 |
 | updated_at | datetime | NOT NULL | 更新日時 |
 
-複合ユニーク制約：  
-`UNIQUE(user_id, workspace_id)`
+#### 複合ユニーク制約
 
-→ 同じユーザーが同じワークスペースに重複登録されないようにする。
-
----
-
-### 1.4 tasks テーブル
-
-ワークスペース内のタスク情報を管理するテーブル。
-
-| カラム名 | 型 | 制約 | 説明 |
-|----------|----|------|------|
-| id | bigint | PK | タスクID |
-| title | string | NOT NULL | タスク名 |
-| description | text | NULL可 | 詳細説明 |
-| status | integer | NOT NULL / default: 0 | 状態（todo=0, doing=1, done=2） |
-| category | string | NULL可 | カテゴリ |
-| workspace_id | bigint | FK(workspaces.id) | 所属ワークスペースID |
-| assignee_id | bigint | FK(users.id) | 担当ユーザーID |
-| created_at | datetime | NOT NULL | 作成日時 |
-| updated_at | datetime | NOT NULL | 更新日時 |
-
-ステータスは Rails の enum 機能を用いて、以下のように管理する：  
-- 0 : todo（未着手）  
-- 1 : doing（進行中）  
-- 2 : done（完了）  
-
----
-
-### 1.5 task_progresses テーブル
-
-Rakeバッチ処理によって集計されたタスク進捗情報を保存するテーブル。
-
-| カラム名 | 型 | 制約 | 説明 |
-|----------|----|------|------|
-| id | bigint | PK | 集計ID |
-| workspace_id | bigint | FK(workspaces.id) | ワークスペースID |
-| user_id | bigint | FK(users.id) | ユーザーID |
-| total_tasks | integer | NOT NULL | 総タスク数 |
-| completed_tasks | integer | NOT NULL | 完了タスク数 |
-| completion_rate | integer | NOT NULL | 進捗率（%） |
-| aggregated_at | datetime | NOT NULL | 集計実行日時 |
-| created_at | datetime | NOT NULL | 作成日時 |
-| updated_at | datetime | NOT NULL | 更新日時 |
-
-複合ユニーク制約：  
 `UNIQUE(workspace_id, user_id)`
 
-→ 1ワークスペース + 1ユーザーにつき、集計結果は1件のみ保持する。
+1 ワークスペース + 1 ユーザーにつき、  
+集計結果は 1 件のみ保持する。
 
 ---
 
@@ -109,19 +73,19 @@ Rakeバッチ処理によって集計されたタスク進捗情報を保存す�
 
 ### 2.1 users と workspaces
 
-- 多対多関係（N:N）
-- 中間テーブル: `members`
+- 多対多関係（N : N）
+- 中間テーブル：`members`
 
-
-ユーザーは複数のワークスペースに所属可能。  
+ユーザーは複数のワークスペースに所属できる。  
 ワークスペースは複数のユーザーを持つ。
+
+ワークスペース内の権限は `members.role` によって管理する。
 
 ---
 
 ### 2.2 workspaces と tasks
 
-- 一対多関係（1:N）
-
+- 一対多関係（1 : N）
 
 1つのワークスペースに複数のタスクが所属する。
 
@@ -129,8 +93,7 @@ Rakeバッチ処理によって集計されたタスク進捗情報を保存す�
 
 ### 2.3 users と tasks（担当者）
 
-- 一対多関係（1:N）
-
+- 一対多関係（1 : N）
 
 1人のユーザーが複数のタスクの担当者になることができる。
 
@@ -138,15 +101,18 @@ Rakeバッチ処理によって集計されたタスク進捗情報を保存す�
 
 ### 2.4 task_progresses の関係
 
-
-- ワークスペース単位、ユーザー単位でタスク進捗を管理する。
-- `(workspace_id, user_id)` の組み合わせごとに1件のみ保持する。
-
----
-
-## 3. ER 図（テキスト表現）
-
-以下は本システムのER構造をテキストで表した図である。
-
+- ワークスペース単位・ユーザー単位でタスク進捗を管理する。
+- `(workspace_id, user_id)` の組み合わせごとに、進捗データは 1 件のみ保持する。
 
 ---
+
+## ER 関係一覧
+
+| エンティティ | 関係 | エンティティ | 備考 |
+|------------|------|-------------|------|
+| users | N : N | workspaces | members 経由 |
+| workspaces | 1 : N | tasks | ワークスペース単位 |
+| users | 1 : N | tasks | assignee |
+| tasks | 集計対象 | task_progresses | batch 集計 |
+| users | 1 : N | task_progresses | ユーザー単位集計 |
+| workspaces | 1 : N | task_progresses | ワークスペース単位集計 |

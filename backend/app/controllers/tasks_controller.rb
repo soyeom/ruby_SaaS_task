@@ -8,10 +8,34 @@ class TasksController < ApplicationController
   def index
     tasks = @workspace.tasks
 
+    # ステータスフィルタ
+    if params[:status].present?
+      status_list = params[:status].split(",")
+      valid_statuses = status_list & Task.statuses.keys
+
+      if valid_statuses.any?
+        tasks = tasks.where(status: valid_statuses)
+      else
+        return render json: { error: "不正なステータスが指定されました。" },
+                      status: :bad_request
+      end
+    end
+
+    # カテゴリフィルタ
+    if params[:category].present?
+      tasks = tasks.where(category: params[:category])
+    end
+
+    # 担当者フィルタ
+    if params[:assignee_id].present?
+      tasks = tasks.where(assignee_id: params[:assignee_id])
+    end
+
     render json: tasks.as_json(
       only: [:id, :title, :status, :category, :assignee_id]
     )
   end
+
 
   # GET /workspaces/:workspace_id/tasks/:id
   def show

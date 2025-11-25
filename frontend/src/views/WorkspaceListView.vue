@@ -6,23 +6,28 @@ section.workspace-page
       p.page-subtitle
         | ログイン中のユーザーが所属しているワークスペースの一覧です。
 
-    //- 생성 폼
+    //- 作成フォーム
     .workspace-create-card
       h2.card-title ワークスペースを作成
-      form(@submit.prevent="onCreate")
-        .form-row
-          input.name-input(
+
+      form.create-form(@submit.prevent="onCreate")
+        .form-group
+          label.form-label(for="name") ワークスペース名
+          input.name-input#name(
             type="text"
-            v-model="newName"
-            placeholder="新しいワークスペース名"
+            v-model="name"
+            placeholder="例) 開発チーム / 個人タスク用"
           )
-          button.create-button(type="submit" :disabled="creating")
-            span(v-if="creating") 作成中…
-            span(v-else) 作成する
+
         p.form-error(v-if="errorMessage") {{ errorMessage }}
         p.form-success(v-if="successMessage") {{ successMessage }}
 
-    //- 리스트 영역
+        .button-row
+          button.create-button(type="submit" :disabled="creating")
+            span(v-if="creating") 作成中…
+            span(v-else) 作成する
+
+    //- リスト
     .workspace-list-card
       h2.card-title ワークスペース一覧
 
@@ -35,7 +40,6 @@ section.workspace-page
           @click="goToWorkspace(ws.id)"
         )
           .ws-name {{ ws.name }}
-          .ws-id text ID: {{ ws.id }}
 
       p.empty-text(v-if="!loading && workspaces.length === 0")
         | 所属しているワークスペースがありません。
@@ -51,13 +55,14 @@ const router = useRouter();
 const workspaces = ref([]);
 const loading = ref(false);
 
-const newName = ref("");
+const name = ref("");
 const creating = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
 
 const fetchWorkspaces = async () => {
   loading.value = true;
+  errorMessage.value = "";
   try {
     const res = await api.get("/workspaces");
     // index: workspaces.as_json(only: [:id, :name])
@@ -79,27 +84,22 @@ const onCreate = async () => {
   errorMessage.value = "";
   successMessage.value = "";
 
-  if (!newName.value.trim()) {
+  if (!name.value.trim()) {
     errorMessage.value = "ワークスペース名は必須です。";
     return;
   }
 
   try {
     creating.value = true;
+
     const res = await api.post("/workspaces", {
-      name: newName.value.trim(), // 컨트롤러에서 params[:name] 사용
+      name: name.value.trim(), // 컨트롤러에서 params[:name] 사용
     });
 
-    // 성공 응답:
-    // {
-    //   message: "ワークスペースを作成しました。",
-    //   workspace: { id: ..., name: ... }
-    // }
     successMessage.value = res.data.message || "ワークスペースを作成しました。";
-
-    // 새로 생성된 워크스페이스를 리스트에 추가
+    // 새 워크스페이스를 리스트에 즉시 반영
     workspaces.value.push(res.data.workspace);
-    newName.value = "";
+    name.value = "";
   } catch (err) {
     const data = err.response?.data;
     if (data?.details) {
@@ -168,12 +168,21 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
-.form-row {
+.form-group {
+  margin-bottom: 8px;
+}
+
+.form-label {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.create-form {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
 }
 
 .name-input {
@@ -194,6 +203,12 @@ onMounted(() => {
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
 }
 
+.button-row {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
 .create-button {
   border: none;
   border-radius: 999px;
@@ -212,13 +227,13 @@ onMounted(() => {
 }
 
 .form-error {
-  margin-top: 8px;
+  margin-top: 4px;
   font-size: 12px;
   color: #b91c1c;
 }
 
 .form-success {
-  margin-top: 8px;
+  margin-top: 4px;
   font-size: 12px;
   color: #15803d;
 }
@@ -234,7 +249,7 @@ onMounted(() => {
   border-radius: 10px;
   border: 1px solid #e5e7eb;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   cursor: pointer;
   font-size: 14px;
@@ -251,11 +266,6 @@ onMounted(() => {
 .ws-name {
   font-weight: 500;
   color: #111827;
-}
-
-.ws-id {
-  font-size: 12px;
-  color: #9ca3af;
 }
 
 .empty-text {

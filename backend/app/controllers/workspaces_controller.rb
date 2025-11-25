@@ -14,11 +14,29 @@ class WorkspacesController < ApplicationController
 
   # GET /workspaces/:id
   def show
-    render json: {
-      id: @workspace.id,
-      name: @workspace.name
+  render json: {
+    id: @workspace.id,
+    name: @workspace.name,
+    members: @workspace.members.includes(:user).map { |m|
+      {
+        id: m.id,
+        role: m.role,
+        user: {
+          id: m.user.id,
+          login_id: m.user.login_id
+        }
+      }
+    },
+    tasks: @workspace.tasks.map { |t|
+      {
+        id: t.id,
+        title: t.title,
+        status: t.status,
+        assignee_id: t.assignee_id
+      }
     }
-  end
+  }
+end
 
   # POST /workspaces
   # ワークスペース作成

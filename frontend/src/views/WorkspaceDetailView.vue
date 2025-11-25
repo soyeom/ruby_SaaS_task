@@ -1,20 +1,17 @@
 <template lang="pug">
 section.workspace-detail-page
   .workspace-shell
-    // 로딩
     div(v-if="loading") 読み込み中…
 
-    // 에러 + 데이터 없음
     div(v-else-if="!workspace && errorMessage")
       p.form-error {{ errorMessage }}
       button.secondary-button(@click="goBack") 一覧に戻る
 
-    // 정상 데이터 있을 때
     .workspace-card(v-else-if="workspace")
       header.card-header
         h1.card-title ワークスペース詳細
 
-      // 이름 편집 영역
+      // ワークスペース名編集
       .form-group
         label.form-label(for="name") ワークスペース名
         input.form-input#name(
@@ -25,33 +22,26 @@ section.workspace-detail-page
       p.form-error(v-if="errorMessage") {{ errorMessage }}
       p.form-success(v-if="successMessage") {{ successMessage }}
 
-      // 멤버 / 태스크 섹션
+      // タスク一覧セクション
       .workspace-subsections
         .sub-card
-          h2.sub-title メンバー
-          ul.member-list(v-if="members.length > 0")
-            li.member-item(
-              v-for="m in members"
-              :key="m.id"
-            )
-              span.member-name {{ m.user.login_id }}
-              span.member-role {{ roleLabel(m.role) }}
-          p.sub-desc(v-else)
-            | このワークスペースに参加しているメンバーがまだいません。
+          .sub-card-header
+            h2.sub-title タスク
+            button.sub-action-button(@click="goToTaskCreate") ＋ タスク
 
-        .sub-card
-          h2.sub-title タスク
           ul.task-list(v-if="tasks.length > 0")
             li.task-item(
               v-for="t in tasks"
               :key="t.id"
+              @click="goToTask(t.id)"
             )
               span.task-title {{ t.title }}
               span.task-status {{ statusLabel(t.status) }}
+
           p.sub-desc(v-else)
             | このワークスペースに紐づくタスクはまだありません。
 
-      // 카드 맨 하단에 버튼들
+      // 카드 맨 하단 버튼들
       footer.card-footer
         .button-row
           button.primary-button(:disabled="saving" @click="onUpdate")
@@ -76,9 +66,7 @@ const router = useRouter();
 const workspace = ref(null);
 const editName = ref("");
 
-// 새로 추가
-const members = ref([]);
-const tasks = ref([]);
+const tasks = ref([]); // ★ 태스크 리스트
 
 const loading = ref(false);
 const saving = ref(false);
@@ -94,19 +82,9 @@ const fetchWorkspace = async () => {
   try {
     const id = route.params.id;
     const res = await api.get(`/workspaces/${id}`);
-    // 기대하는 응답:
-    // {
-    //   id, name,
-    //   members: [...],
-    //   tasks: [...]
-    // }
-    workspace.value = {
-      id: res.data.id,
-      name: res.data.name,
-    };
+    // show: { id: ..., name: ... } 라고 가정
+    workspace.value = res.data;
     editName.value = res.data.name;
-    members.value = res.data.members || [];
-    tasks.value = res.data.tasks || [];
   } catch (err) {
     const status = err.response?.status;
     const data = err.response?.data;
@@ -124,6 +102,19 @@ const fetchWorkspace = async () => {
     workspace.value = null;
   } finally {
     loading.value = false;
+  }
+};
+
+// ★ 이 워크스페이스의 태스크 목록을 가져온다
+const fetchTasks = async () => {
+  try {
+    const workspaceId = route.params.id;
+    const res = await api.get(`/workspaces/${workspaceId}/tasks`);
+    // index: [{ id, title, status, category, assignee_id }, ...]
+    tasks.value = res.data;
+  } catch (err) {
+    console.error("タスク一覧取得に失敗しました:", err);
+    // 필요하면 task 전용 에러 메시지 따로 둘 수도 있음
   }
 };
 
@@ -188,15 +179,20 @@ const goBack = () => {
   router.push("/workspaces");
 };
 
-// 역할 / 상태 라벨링 (프론트에서 보기 좋게)
-const roleLabel = (role) => {
-  if (role === "owner") return "オーナー";
-  if (role === "member") return "メンバー";
-  return role || "";
+// タスク詳細へ移動
+const goToTask = (taskId) => {
+  const workspaceId = route.params.id;
+  router.push(`/workspaces/${workspaceId}/tasks/${taskId}`);
 };
 
+// タスク作成へ移動
+const goToTaskCreate = () => {
+  const workspaceId = route.params.id;
+  router.push(`/workspaces/${workspaceId}/tasks/create`);
+};
+
+// 상태 라벨
 const statusLabel = (status) => {
-  // 나중에 Task status enum에 맞춰서 수정하면 됨
   if (status === "todo") return "未着手";
   if (status === "doing") return "進行中";
   if (status === "done") return "完了";
@@ -205,12 +201,14 @@ const statusLabel = (status) => {
 
 onMounted(() => {
   fetchWorkspace();
+  fetchTasks();
 });
 
 watch(
   () => route.params.id,
   () => {
     fetchWorkspace();
+    fetchTasks();
   }
 );
 </script>
@@ -292,12 +290,9 @@ watch(
   margin-bottom: 4px;
 }
 
-/* 멤버 / 태스크 섹션 위에 여백 */
+/* タスクセクション */
 .workspace-subsections {
   margin-top: 16px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
 }
 
 .sub-card {
@@ -306,6 +301,27 @@ watch(
   padding: 16px 18px;
   border: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.03);
+}
+
+.sub-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.sub-action-button {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.sub-action-button:hover {
+  background: #f3f4f6;
 }
 
 .sub-title {
@@ -320,37 +336,38 @@ watch(
   color: #6b7280;
 }
 
-.member-list,
 .task-list {
   list-style: none;
   padding: 0;
   margin: 4px 0 0;
 }
 
-.member-item,
 .task-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
   font-size: 13px;
-  padding: 4px 0;
+  cursor: pointer;
 }
 
-.member-item + .member-item,
 .task-item + .task-item {
   border-top: 1px solid #e5e7eb;
 }
 
-.member-name,
+.task-item:hover {
+  background: #f9fafb;
+}
+
 .task-title {
   color: #111827;
 }
 
-.member-role,
 .task-status {
   color: #6b7280;
 }
 
-/* 하단 버튼 영역에 여백 크게 */
+/* 하단 버튼 */
 .card-footer {
   margin-top: 20px;
 }

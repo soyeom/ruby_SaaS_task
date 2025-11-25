@@ -8,5 +8,6 @@ Rails.application.routes.draw do
   resources :workspaces, only: %i[index create show update destroy]  do
     # タスク
     resources :tasks, only: %i[index show create update destroy]
+    resources :task_progresses, only: %i[index]
   end
 end

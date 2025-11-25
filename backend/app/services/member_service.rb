@@ -1,4 +1,4 @@
-class MembersService
+class MemberService
   def self.add_member(workspace:, login_id:, role: "member")
     return [:invalid, "login_id は必須です。"] if login_id.blank?
 

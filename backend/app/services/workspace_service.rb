@@ -1,4 +1,4 @@
-class WorkspacesService
+class WorkspaceService
   def self.create(name:, owner:)
     return [:invalid, "ワークスペース名は必須です。"] if name.blank?
 

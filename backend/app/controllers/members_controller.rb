@@ -5,31 +5,23 @@ class MembersController < ApplicationController
 
   # POST /workspaces/:workspace_id/members
   def create
-    login_id = params[:login_id]
-    role     = params[:role] || "member"
+    role = params[:role] || "member"
 
-    if login_id.blank?
-      return render json: { error: "login_id は必須です。" }, status: :bad_request
-    end
+    status, payload = WorkspaceMembersService.add_member(
+      workspace: @workspace,
+      login_id: params[:login_id],
+      role: role
+    )
 
-    user = User.find_by(login_id: login_id)
-    if user.nil?
-      return render json: { error: "指定された login_id のユーザーが見つかりません。" },
-                    status: :not_found
-    end
+    case status
+    when :ok
+      member = payload
+      user   = member.user
 
-    if @workspace.members.exists?(user_id: user.id)
-      return render json: { error: "このユーザーは既にワークスペースのメンバーです。" },
-                    status: :unprocessable_entity
-    end
-
-    member = @workspace.members.new(user: user, role: role)
-
-    if member.save
       render json: {
         message: "メンバーを追加しました。",
         member: {
-          id: member.id,
+          id:   member.id,
           role: member.role,
           user: {
             id:       user.id,
@@ -37,10 +29,20 @@ class MembersController < ApplicationController
           }
         }
       }, status: :created
-    else
+
+    when :invalid
+      render json: { error: payload }, status: :bad_request
+
+    when :user_not_found
+      render json: { error: payload }, status: :not_found
+
+    when :already_member
+      render json: { error: payload }, status: :unprocessable_entity
+
+    when :validation_failed
       render json: {
         error:   "メンバーの追加に失敗しました。",
-        details: member.errors.full_messages
+        details: payload
       }, status: :unprocessable_entity
     end
   end

@@ -41,7 +41,7 @@ section.auth-page
 <script setup>
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import api from "@/api/client"; // src/api/client.js 에서 Axios 인스턴스 export 했다고 가정
+import api from "../api/client"; // src/api/client.js 에서 Axios 인스턴스 export 했다고 가정
 
 const router = useRouter();
 

@@ -7,76 +7,36 @@ section.task-page
       p.message.error {{ errorMessage }}
       button.btn.btn-gray(@click="goBack") ワークスペースに戻る
 
-    .card.card-md.task-card(v-else)
-      // ── 헤더: 제목 + breadcrumb
-      header.task-header
-        p.breadcrumb タスク
-        input.task-title-input(
-          type="text"
-          v-model="title"
-          placeholder="タイトル"
-        )
-
-      form(@submit.prevent="onUpdate")
-        // ── 메타 정보 (상태 / 카테고리 / 담당자)
-        .meta-row
-          .meta-field
-            label.form-label(for="status") ステータス
-            select#status(v-model="status")
-              option(value="todo") 未着手
-              option(value="doing") 進行中
-              option(value="done") 完了
-
-          .meta-field
-            label.form-label(for="category") カテゴリ
-            input#category(
-              type="text"
-              v-model="category"
-              placeholder="例) バグ / 機能 / 調査"
-            )
-
-          .meta-field
-            label.form-label(for="assignee_id") 担当者
-            select#assignee_id(v-model="assigneeId")
-              option(value="") 担当者なし
-              option(
-                v-for="m in members"
-                :key="m.user ? m.user.id : m.id"
-                :value="m.user ? m.user.id : m.id"
-              )
-                | {{ m.user ? m.user.login_id : m.login_id }}
-
-        // ── 설명 영역
-        .form-group
-          label.form-label(for="description") 説明
-          textarea#description(
-            v-model="description"
-            rows="5"
-            placeholder="タスクの詳細やメモを記載してください。"
-          )
-
-        p.message.error(v-if="errorMessage") {{ errorMessage }}
-        p.message.success(v-if="successMessage") {{ successMessage }}
-
-        footer.task-footer
-          .button-row
-            button.btn.btn-primary.btn-hover-lift(type="submit" :disabled="saving")
-              span(v-if="saving") 更新中…
-              span(v-else) タスクを更新
-
-            button.btn.btn-danger.btn-hover-lift(
-              type="button"
-              :disabled="deleting"
-              @click="onDelete"
-            )
-              span(v-if="deleting") 削除中…
-              span(v-else) タスクを削除
-
-            button.btn.btn-gray(type="button" @click="goBack")
-              | ← ワークスペースに戻る
+    TaskForm(
+      v-else
+      :title="title"
+      :description="description"
+      :status="status"
+      :category="category"
+      :assignee-id="assigneeId"
+      :members="members"
+      :saving="saving"
+      :deleting="deleting"
+      :error-message="errorMessage"
+      :success-message="successMessage"
+      breadcrumb="タスク"
+      submit-label="タスクを更新"
+      submit-loading-label="更新中…"
+      :show-delete="true"
+      @update:title="title = $event"
+      @update:description="description = $event"
+      @update:status="status = $event"
+      @update:category="category = $event"
+      @update:assigneeId="assigneeId = $event"
+      @submit="onUpdate"
+      @delete="onDelete"
+      @back="goBack"
+    )
 </template>
 
 <script setup>
+import TaskForm from "@/components/TaskLayout.vue";
+
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "../api/client";

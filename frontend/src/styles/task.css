@@ -1,0 +1,78 @@
+/* =========================
+   タスクページ 共通
+========================= */
+
+.task-page {
+  min-height: 100vh;
+  background: #f7f7f5;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.task-shell {
+  width: 100%;
+  max-width: 720px;
+}
+
+/* 카드 기본은 base.css의 .card, .card-md 사용 */
+.task-card {
+  /* 필요시 여백만 아주 조금 조정 가능 */
+}
+
+/* =========================
+   ヘッダー
+========================= */
+
+.task-header {
+  margin-bottom: 16px;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+/* タスクタイトル専用インプット */
+.task-title-input {
+  width: 100%;
+  border: none;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 4px 0;
+  margin-top: 4px;
+  outline: none;
+  background: transparent;
+}
+
+/* =========================
+   メタ情報行
+========================= */
+
+.meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* =========================
+   フッター
+========================= */
+
+.task-footer {
+  margin-top: 16px;
+}
+
+.task-footer .button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

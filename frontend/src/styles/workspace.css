@@ -1,0 +1,380 @@
+/* ---------------------
+   ページレイアウト
+--------------------- */
+
+.workspace-page,
+.workspace-detail {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+
+}
+
+.workspace-page {
+  background: #f7f7f5;
+}
+
+.workspace-detail {
+  background: #f5f5f2;
+  padding-top: 32px;
+  padding-bottom: 40px;
+}
+
+.workspace-shell,
+.container {
+  width: 100%;
+  max-width: 820px;
+}
+
+/* ---------------------
+   ページヘッダー
+--------------------- */
+
+.workspace-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  color: #6b7280;
+}
+
+
+/* セクションヘッダー（タイトル + 右側ボタン） */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 제목은 왼쪽, 버튼은 오른쪽 끝 */
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-header .section-title {
+  margin: 0; /* 아래쪽 여백 제거해서 버튼이랑 높이 맞추기 */
+}
+
+.card-title,
+.section-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.sub-desc {
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+/* ---------------------
+   ワークスペースタイトル
+--------------------- */
+
+.workspace-title {
+  font-size: 20px;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 4px 0;
+}
+
+/* ---------------------
+   フォーム／入力
+--------------------- */
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* サイズだけ調整（スタイル自体は base の input を利用） */
+.name-input,
+.filter-input,
+.member-input,
+.member-select {
+  padding: 6px 8px;
+}
+
+.name-input {
+  padding: 8px 10px;
+}
+
+/* ---------------------
+   ボタン行・フィルター行
+--------------------- */
+
+.button-row {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: flex-end;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* 上部の小さいボタン
+   → HTML 側では .btn を併用する前提 */
+.add-task-btn,
+.filter-button,
+.filter-clear,
+.member-add-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.add-task-btn {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  color: #111827;
+}
+
+.add-task-btn:hover {
+  background: #f3f4f6;
+}
+
+.filter-button {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.filter-clear {
+  background: #ffffff;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.member-add-btn {
+  background: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.member-add-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------------------
+   リスト
+--------------------- */
+
+.workspace-list,
+.task-list,
+.progress-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.workspace-item {
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.workspace-item + .workspace-item {
+  margin-top: 8px;
+}
+
+.workspace-item:hover {
+  background: #f9fafb;
+}
+
+.ws-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* ---------------------
+   タスクリスト
+--------------------- */
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.task-item + .task-item {
+  border-top: 1px solid #f3f4f6;
+}
+
+.task-item:hover {
+  background: #fafafa;
+}
+
+.task-left .title {
+  font-weight: 500;
+  color: #111827;
+}
+
+.task-left .meta {
+  color: #6b7280;
+  display: block;
+}
+
+.assignee {
+  font-size: 12px;
+  background: #eef2ff;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #3730a3;
+}
+
+.no-assignee {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ---------------------
+   進捗リスト
+--------------------- */
+
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.progress-item + .progress-item {
+  border-top: 1px solid #f3f4f6;
+}
+
+.progress-left .user-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+.progress-left .progress-text {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.progress-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.progress-bar-outer {
+  width: 100px;
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.progress-bar-inner {
+  height: 100%;
+  background: #4f46e5;
+  border-radius: 999px;
+}
+
+.progress-rate {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+/* ---------------------
+   メンバーチップ
+--------------------- */
+
+.member-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.member-chip-name {
+  font-weight: 500;
+}
+
+.member-chip-role {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4b5563;
+}
+
+/* ---------------------
+   メンバーフォーム
+--------------------- */
+
+.member-form {
+  margin-top: 4px;
+}
+
+.member-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+/* フッターアクションボタン行 */
+.footer-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap; /* 줄바꿈 허용 (화면 좁을 때) */
+  gap: 8px;        /* 버튼 사이 간격 */
+}
+
+/* ---------------------
+   空状態テキスト
+--------------------- */
+
+.empty-text,
+.empty-msg {
+  color: #6b7280;
+  margin-top: 4px;
+}

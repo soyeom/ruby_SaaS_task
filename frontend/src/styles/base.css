@@ -1,3 +1,6 @@
+/* ---------------------
+   リセット
+--------------------- */
 *,
 *::before,
 *::after {
@@ -19,10 +22,15 @@ body {
 }
 
 /* ---------------------
-   Typography
+   タイポグラフィ
 --------------------- */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
   font-weight: 600;
   color: #111827;
@@ -52,7 +60,7 @@ small {
 }
 
 /* ---------------------
-   Form Elements
+   フォーム要素（共通）
 --------------------- */
 
 input,
@@ -64,7 +72,8 @@ select {
 }
 
 input,
-textarea {
+textarea,
+select {
   padding: 9px 10px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
@@ -83,36 +92,122 @@ select:focus {
 }
 
 /* ---------------------
-   Buttons
+   カード（共通）
 --------------------- */
 
-/* base button */
-button {
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+  margin-bottom: 16px;
+}
+
+/* パディング違いだけ細かく分ける */
+.card-lg {
+  padding: 24px 22px;
+}
+
+.card-md {
+  padding: 20px 18px;
+}
+
+.card-sm {
+  padding: 16px 18px 14px;
+}
+
+/* カード内タイトル（ワークスペース / タスク共通で利用） */
+.card-title,
+.section-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.sub-desc {
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+/* ---------------------
+
+/* フォームユーティリティ */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.form-label {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+/* ---------------------
+   ボタン（共通コンポーネント）
+--------------------- */
+
+/* ベースボタン */
+.btn {
   border-radius: 999px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.05s ease,
-    box-shadow 0.15s ease;
+  transition: background-color 0.15s ease,
+              transform 0.05s ease,
+              box-shadow 0.15s ease;
   font-family: inherit;
 }
 
-button.primary {
+/* プライマリーボタン */
+.btn-primary {
   padding: 9px 14px;
   font-size: 14px;
   font-weight: 500;
   background: #111827;
   color: #ffffff;
+  border: 1px solid #111827;
 }
 
-/* hover */
-button.primary:hover:enabled {
-  background: #0f172a;
+/* デンジャーボタン */
+.btn-danger {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #ef4444;
+}
+
+/* グレーボタン */
+.btn-gray {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* ホバー演出（リフト） */
+.btn-hover-lift:hover:enabled {
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
   transform: translateY(-1px);
 }
 
-/* disabled */
-button:disabled {
+/* ホバー時の色変更も hover-lift のときだけ適用 */
+.btn-primary.btn-hover-lift:hover:enabled {
+  background: #0f172a;
+}
+
+.btn-gray.btn-hover-lift:hover:enabled {
+  background: #f9fafb;
+}
+
+.btn-danger.btn-hover-lift:hover:enabled {
+  background: #dc2626;
+}
+
+/* 無効状態 */
+.btn:disabled {
   opacity: 0.6;
   cursor: default;
   box-shadow: none;
@@ -120,7 +215,7 @@ button:disabled {
 }
 
 /* ---------------------
-   Links
+   リンク
 --------------------- */
 
 a {
@@ -130,4 +225,29 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* ---------------------
+   メッセージ（ステータス文言）
+--------------------- */
+
+.message {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.message.error {
+  color: #b91c1c;
+}
+
+.message.success {
+  color: #15803d;
+}
+
+.message.info {
+  color: #2563eb;
+}
+
+.message.warning {
+  color: #d97706;
 }

@@ -5,6 +5,8 @@ import router from './router';
 
 import "@/styles/base.css";
 import "@/styles/auth.css";
+import "@/styles/workspace.css";
+import "@/styles/task.css";
 
 const app = createApp(App);
 

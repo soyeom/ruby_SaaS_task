@@ -286,6 +286,8 @@ GEM
     ruby-vips (2.2.5)
       ffi (~> 1.12)
       logger
+    rufus-scheduler (3.9.2)
+      fugit (~> 1.1, >= 1.11.1)
     securerandom (0.4.1)
     solid_cable (3.0.12)
       actioncable (>= 7.2)
@@ -350,6 +352,7 @@ DEPENDENCIES
   rails (~> 8.1.1)
   rspec-rails
   rubocop-rails-omakase
+  rufus-scheduler
   solid_cable
   solid_cache
   solid_queue

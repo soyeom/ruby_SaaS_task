@@ -26,9 +26,9 @@ AuthLayout(
         autocomplete="current-password"
       )
 
-    p.form-error(v-if="errorMessage") {{ errorMessage }}
+    p.message.error(v-if="errorMessage") {{ errorMessage }}
 
-    button.primary(type="submit" :disabled="isSubmitting")
+    button.btn.btn-primary.btn-hover-lift(type="submit" :disabled="isSubmitting")
       span(v-if="isSubmitting") ログイン中...
       span(v-else) ログイン
 </template>

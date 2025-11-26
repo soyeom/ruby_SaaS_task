@@ -2,7 +2,7 @@
 <template lang="pug">
 section.auth-page
   .auth-shell
-    .auth-card
+    .card.card-md
       .auth-header
         .logo-mark {{ logoText }}
         h1.auth-title {{ title }}

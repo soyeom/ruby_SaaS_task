@@ -347,6 +347,33 @@
 }
 
 /* ---------------------
+   メンバー削除ボタン（×）
+--------------------- */
+
+.member-chip-remove {
+  background: transparent;   /* 배경 없음 */
+  border: none;              /* 테두리 없음 */
+  padding: 0;
+  margin-left: 4px;          /* 이름/role과 살짝 간격 */
+  cursor: pointer;
+  font-size: 14px;           /* 너무 크지 않게 */
+  line-height: 1;
+  color: #9ca3af;            /* 연한 회색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.member-chip-remove:hover {
+  color: #ef4444;            /* hover 시 살짝 빨간 느낌 */
+}
+
+.member-chip-remove:active {
+  transform: scale(0.9);     /* 눌렀을 때 약간 축소 */
+}
+
+
+/* ---------------------
    メンバーフォーム
 --------------------- */
 

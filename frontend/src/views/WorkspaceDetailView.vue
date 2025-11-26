@@ -92,7 +92,11 @@ section.workspace-detail
             span.member-chip-role(
               v-else
             ) メンバー
-
+            button.member-chip-remove(
+              v-if="m.role !== 'owner'"
+              type="button"
+              @click.stop="onRemoveMember(m)"
+            ) ×
         form.member-form(@submit.prevent="onAddMember")
           .member-row
             input.member-input(
@@ -252,6 +256,33 @@ const onAddMember = async () => {
     memberSaving.value = false;
   }
 };
+
+const onRemoveMember = async (member) => {
+  memberError.value = "";
+  memberSuccess.value = "";
+
+  const name = member.user ? member.user.login_id : member.login_id;
+  const ok = window.confirm(`${name} をメンバーから削除しますか？`);
+  if (!ok) return;
+
+  try {
+    memberSaving.value = true;
+
+    const workspaceId = route.params.id;
+    await api.delete(`/workspaces/${workspaceId}/members/${member.id}`);
+
+    members.value = members.value.filter((m) => m.id !== member.id);
+
+    memberSuccess.value = "メンバーを削除しました。";
+  } catch (err) {
+    const data = err.response?.data;
+    memberError.value =
+      data?.error || "メンバーの削除に失敗しました。";
+  } finally {
+    memberSaving.value = false;
+  }
+};
+
 
 // タスク一覧取得（フィルター反映）
 const fetchTasks = async () => {

@@ -47,6 +47,25 @@ class MembersController < ApplicationController
     end
   end
 
+  # DELETE /workspaces/:workspace_id/members/:id
+  def destroy
+    status, payload = MemberService.remove_member(
+          workspace: @workspace,
+          member_id: params[:id]
+        )
+
+    case status
+    when :ok
+      render json: { message: "メンバーを削除しました。" }, status: :ok
+
+    when :not_found
+      render json: { error: payload }, status: :not_found
+
+    when :cannot_remove_owner
+      render json: { error: payload }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_workspace

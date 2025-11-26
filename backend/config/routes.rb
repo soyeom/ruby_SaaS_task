@@ -9,6 +9,6 @@ Rails.application.routes.draw do
     # タスク
     resources :tasks, only: %i[index show create update destroy]
     resources :task_progresses, only: %i[index]
-    resources :members, only: %i[create update destroy]
+    resources :members, only: %i[create destroy]
   end
 end

@@ -17,4 +17,17 @@ class MemberService
       [:validation_failed, member.errors.full_messages]
     end
   end
+
+  def self.remove_member(workspace:, member_id:)
+    member = workspace.members.find_by(id: member_id)
+    return [:not_found, "指定されたメンバーが見つかりません。"] unless member
+
+    # （必要なら）最後のオーナー削除を禁止したい場合
+    if member.role == "owner" && workspace.members.where(role: :owner).count == 1
+      return [:cannot_remove_owner, "ワークスペースには少なくとも1人のオーナーが必要です。"]
+    end
+
+    member.destroy
+    [:ok, nil]
+  end
 end
